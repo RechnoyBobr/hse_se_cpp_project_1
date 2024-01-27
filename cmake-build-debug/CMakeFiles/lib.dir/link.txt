@@ -1,0 +1,2 @@
+/usr/sbin/ar qc liblib.a CMakeFiles/lib.dir/lib/long_arithmetic.cxx.o
+/usr/sbin/ranlib liblib.a
