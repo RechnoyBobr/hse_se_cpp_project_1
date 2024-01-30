@@ -18,14 +18,22 @@ public:
 
     void cout() const; // Cout the whole number
     LongNum operator+(const LongNum &n) const;
+
     LongNum operator*(const LongNum &n) const;
+
     LongNum operator-(const LongNum &n) const;
-    LongNum operator>(const LongNum &n) const;
-    LongNum operator<(const LongNum &n) const;
-    LongNum operator==(const LongNum &n) const;
-    LongNum& operator=(const LongNum &n);
-    LongNum operator>=(const LongNum &n) const;
-    LongNum operator<=(const LongNum &n) const;
+
+    bool operator>(const LongNum &n) const;
+
+    bool operator<(const LongNum &n) const;
+
+    bool operator==(const LongNum &n) const;
+
+    LongNum &operator=(const LongNum &n);
+
+    bool operator>=(const LongNum &n) const;
+
+    bool operator<=(const LongNum &n) const;
 };
 
 
