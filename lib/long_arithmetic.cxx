@@ -359,6 +359,7 @@ LongNum LongNum::operator*(const LongNum &n) const {
     std::reverse(number_1.begin(), number_1.end());
     number_1.insert(number_1.end(), this->float_part.begin(), this->float_part.end());
     std::deque<long long> number_2 = std::deque(n.int_part.begin(), n.int_part.end() + 1);
+    //Hello
     std::reverse(number_2.begin(), number_2.end());
     number_2.insert(number_2.end(), n.float_part.begin(), n.float_part.end());
     std::deque<long long> res_number(number_2.size() + number_1.size());
