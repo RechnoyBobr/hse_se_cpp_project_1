@@ -1,3 +1,4 @@
-ToolSet: Arch Linux (remote)Options: 
+ToolSet: 11.0 w64 (local)@C:\Users\Administrator\AppData\Local\Programs\CLion Nova\bin\mingw
+Options: 
 
-Options:
+Options:-DCMAKE_MAKE_PROGRAM=C:/Users/Administrator/AppData/Local/Programs/CLion Nova/bin/ninja/win/x64/ninja.exe
