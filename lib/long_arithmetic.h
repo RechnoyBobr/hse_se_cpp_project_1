@@ -31,6 +31,8 @@ public:
 
     LongNum operator-(const LongNum &n) const;
 
+    LongNum operator/(const LongNum &n) const;
+
     bool operator>(const LongNum &n) const;
 
     bool operator<(const LongNum &n) const;

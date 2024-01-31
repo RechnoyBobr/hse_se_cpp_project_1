@@ -6,9 +6,8 @@ LongNum operator ""_bigF(const char *x) {
 }
 
 int main() {
-
-    LongNum f = 13352315653.12356123612_bigF;
-    LongNum g = f *1.0_bigF;
+    LongNum f = 1.3425_bigF;
+    LongNum g = f *1.1_bigF;
     g.cout();
     return 0;
 }

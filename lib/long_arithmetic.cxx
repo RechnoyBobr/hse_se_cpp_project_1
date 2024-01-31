@@ -35,10 +35,13 @@ std::deque<long long> merge_deques(const std::deque<long long> &int_part, const 
 }
 
 void LongNum::unmerge_deques() {
-    int ind = this->dotPos / 6;
-    int digit = this->dotPos;
+    int f_size = static_cast<int>(log10f(digits[0] ? digits[0] : 1)) + 1;
+    int ind = (this->dotPos - f_size) / 6 + ((this->dotPos - f_size) > 0 ? 1 : 0);
+    int digit = ind == 0 ? dotPos : (this->dotPos - f_size - 1) % 6;
     int_part = std::deque(digits.begin(), digits.begin() + ind);
-    int_part.emplace_back(digits[ind] / pow(10, 6 - digit % 6));
+    if (digit != 0) {
+        int_part.emplace_back(digits[ind] / pow(10, 6 - digit % 6));
+    }
     std::reverse(int_part.begin(), int_part.end());
     float_part = std::deque(digits.begin() + ind, digits.end());
     float_part[0] %= static_cast<long long>(pow(10, 6 - digit % 6));
@@ -99,10 +102,10 @@ LongNum::LongNum(std::string num) {
     auto f_ptr = float_part.begin();
     int from = size + 1;
     this->n_frac = from;
-    while (from < num.size() - 1) {
+    while (from <= num.size() - 1) {
         int to_add = 6;
         int temp_n = 0;
-        if (from > num.size() - 6 && (num.size() - size - 1) % 6 != 0) {
+        if (from > static_cast<int>(num.size() - 6) && (num.size() - size) % 6 != 0) {
             to_add = (num.size() - size - 1) % 6;
         }
         for (int k = 0; k < to_add; ++k) {
@@ -413,13 +416,12 @@ LongNum LongNum::operator-(const LongNum &number) const {
 }
 
 
-// TODO: fix multiplying
 LongNum LongNum::operator*(const LongNum &n) const {
     LongNum res;
     res.isNegative = n.isNegative * this->isNegative;
     const std::deque<long long> number_1 = this->digits, number_2 = n.digits;
     std::deque<long long> res_number(number_1.size() + number_2.size() + 1);
-    for (int i = static_cast<int>(number_1.size()); i > 0; --i) {
+    for (int i = static_cast<int>(number_1.size()) - 1; i >= 0; --i) {
         int carry = 0;
         for (int j = static_cast<int>(number_2.size()) - 1; j >= 0 || carry != 0; --j) {
             long long cur = res_number[i + j + 1] +
@@ -450,9 +452,9 @@ void LongNum::cout() const {
         std::cout << *i_ptr;
     }
     std::cout << '.';
-    auto f_ptr = float_part.end();
-    while (f_ptr != float_part.begin()) {
-        --f_ptr;
+    auto f_ptr = float_part.begin();
+    while (f_ptr != float_part.end()) {
+
         long long size;
         if (*f_ptr == 0) {
             size = 1;
@@ -468,6 +470,7 @@ void LongNum::cout() const {
         } else {
             std::cout << *f_ptr;
         }
+        ++f_ptr;
     }
     std::cout << "\n";
 }
