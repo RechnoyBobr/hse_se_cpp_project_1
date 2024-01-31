@@ -40,7 +40,7 @@ public:
     bool operator==(const LongNum &n) const;
 
     LongNum &operator=(const LongNum &n);
-
+    LongNum inverse() const;
     bool operator>=(const LongNum &n) const;
 
     bool operator<=(const LongNum &n) const;

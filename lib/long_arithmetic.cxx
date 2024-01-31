@@ -36,7 +36,7 @@ std::deque<long long> merge_deques(const std::deque<long long> &int_part, const 
 
 void LongNum::unmerge_deques() {
     int f_size = static_cast<int>(log10f(digits[0] ? digits[0] : 1)) + 1;
-    int ind = (this->dotPos - f_size) / 6 + ((this->dotPos - f_size) > 0 ? 1 : 0);
+    int ind = (this->dotPos - f_size) / 6;
     int digit = ind == 0 ? dotPos : (this->dotPos - f_size - 1) % 6;
     int_part = std::deque(digits.begin(), digits.begin() + ind);
     if (digit != 0) {
@@ -454,7 +454,6 @@ void LongNum::cout() const {
     std::cout << '.';
     auto f_ptr = float_part.begin();
     while (f_ptr != float_part.end()) {
-
         long long size;
         if (*f_ptr == 0) {
             size = 1;
@@ -474,3 +473,32 @@ void LongNum::cout() const {
     }
     std::cout << "\n";
 }
+
+
+// LongNum LongNum::operator/(const LongNum &n) const {
+//     if (digits.size() == 1 && digits[0] == 0) {
+//         throw "Division by zero";
+//     }
+//     LongNum x = n;
+//     LongNum numerator("1.0");
+//     LongNum temp, res;
+//     while (x.dotPos < numerator.dotPos) {
+//         x.dotPos++;
+//         numerator.dotPos++;
+//     }
+//     while (numerator.dotPos < x.dotPos) {
+//         numerator.dotPos++;
+//     }
+//     temp.dotPos -= numerator.dotPos - 1;
+//     size_t n = 0, total = 30 + std::max(0L, temp.dotPos);
+//     while (numerator != LongNum("0.0") && n < total) {
+//         long long dg = 0; // digit
+//         while (numerator >= x) {
+//             dg++;
+//             numerator = numerator - x;
+//         }
+//         numerator.dotPos++;
+//         temp.digits.emplace_back(div);
+//
+//     }
+// }
