@@ -355,27 +355,37 @@ LongNum LongNum::operator-(const LongNum &number) const {
 // TODO: fix multiplying
 LongNum LongNum::operator*(const LongNum &n) const {
     LongNum res;
-    std::deque<long long> number_1 = std::deque(int_part.rend(), int_part.rbegin());
+    std::deque<long long> number_1 = std::deque(int_part.begin(), int_part.end());
+    std::reverse(number_1.begin(), number_1.end());
     number_1.insert(number_1.end(), this->float_part.begin(), this->float_part.end());
-    std::deque<long long> number_2 = std::deque(n.int_part.rend(), n.int_part.rbegin());
+    std::deque<long long> number_2 = std::deque(n.int_part.begin(), n.int_part.end() + 1);
+    std::reverse(number_2.begin(), number_2.end());
     number_2.insert(number_2.end(), n.float_part.begin(), n.float_part.end());
     std::deque<long long> res_number(number_2.size() + number_1.size());
 
-    for (size_t i = 0; i < number_1.size(); ++i) {
+    for (int i = number_1.size() - 1; i >= 0; --i) {
         int carry = 0;
-        for (size_t j = 0; j < number_2.size() || carry != 0; ++j) {
+        for (int j = number_2.size() - 1; j >= 0 || carry != 0; --j) {
             long long cur = res_number[i + j] +
-                            number_1[i] * (j < number_2.size() ? number_2[j] : 0) + carry;
+                            number_1[i] * (j >= 0 ? number_2[j] : 0) + carry;
             res_number[i + j] = cur % BASE;
             carry = static_cast<int>(cur / BASE);
         }
     }
+    if (*(res_number.end() - 1) == 0) {
+        res_number.pop_back();
+    }
+    if (*res_number.begin() == 0) {
+        res_number.pop_front();
+    }
     res.int_part = std::deque(res_number.begin(),
-                              res_number.end() - 1 - static_cast<long>(float_part.size() + n.float_part.size()));
+                              res_number.end() - static_cast<long>(float_part.size() + n.float_part.size()));
 
     res.float_part = std::deque(
-            res_number.end() - 1 - static_cast<long>(float_part.size() + n.float_part.size()), res_number.end());
+            res_number.end() - static_cast<long>(float_part.size() + n.float_part.size()), res_number.end());
+    std::reverse(res.float_part.begin(), res.float_part.end());
     return res;
+
     // Don't touch I think I'll need it later.
 //    res.int_part.resize(int_part.size() + n.int_part.size());
 //    res.float_part.resize(float_part.size() + n.float_part.size());
@@ -411,12 +421,7 @@ LongNum LongNum::operator*(const LongNum &n) const {
 //            }
 //        }
 //    }
-//    if (*(res.int_part.end() - 1) == 0) {
-//        res.int_part.pop_back();
-//    }
-//    if (*res.float_part.begin() == 0) {
-//        res.float_part.pop_front();
-//    }
+
     return res;
 }
 
@@ -433,7 +438,12 @@ void LongNum::cout() const {
     auto f_ptr = float_part.end();
     while (f_ptr != float_part.begin()) {
         --f_ptr;
-        long long size = static_cast<long long>(log10(*f_ptr));
+        long long size;
+        if (*f_ptr == 0) {
+            size = 1;
+        } else {
+            size = static_cast<long long>(log10(*f_ptr));
+        }
         if (f_ptr != float_part.end() - 1) {
             while (size != 5) {
                 std::cout << "0";
