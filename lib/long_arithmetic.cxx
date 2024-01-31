@@ -355,41 +355,68 @@ LongNum LongNum::operator-(const LongNum &number) const {
 // TODO: fix multiplying
 LongNum LongNum::operator*(const LongNum &n) const {
     LongNum res;
+    std::deque<long long> number_1 = std::deque(int_part.rend(), int_part.rbegin());
+    number_1.insert(number_1.end(), this->float_part.begin(), this->float_part.end());
+    std::deque<long long> number_2 = std::deque(n.int_part.rend(), n.int_part.rbegin());
+    number_2.insert(number_2.end(), n.float_part.begin(), n.float_part.end());
+    std::deque<long long> res_number(number_2.size() + number_1.size());
 
-    res.int_part.resize(int_part.size() + n.int_part.size());
-    res.float_part.resize(float_part.size() + n.float_part.size());
-    for (int i = 0; i < this->float_part.size() + this->int_part.size(); ++i) {
-        for (int j = 0; j < n.float_part.size() + n.int_part.size(); ++j) {
-            long long remainder = 0;
-            size_t ind = i + j;
-            long long n1, n2;
-            if (i >= this->float_part.size()) {
-                n1 = int_part[i - float_part.size()];
-            } else {
-                n1 = float_part[i];
-            }
-            if (j >= n.float_part.size()) {
-                n2 = n.int_part[j - n.float_part.size()];
-            } else {
-                n2 = n.float_part[j];
-            }
-
-            if (i + j < res.float_part.size()) {
-                res.float_part[ind] = n1 * n2;
-                if (ind == res.float_part.size() - 1) {
-                    res.int_part[0] += res.float_part[ind] / BASE;
-                } else {
-                    res.float_part[ind + 1] += res.float_part[ind] / BASE;
-                }
-                res.float_part[ind] %= BASE;
-            } else {
-                ind -= res.float_part.size();
-                res.int_part[ind] = n1 * n2;
-                res.int_part[ind + 1] += res.float_part[ind] / BASE;
-                res.float_part[ind] %= BASE;
-            }
+    for (size_t i = 0; i < number_1.size(); ++i) {
+        int carry = 0;
+        for (size_t j = 0; j < number_2.size() || carry != 0; ++j) {
+            long long cur = res_number[i + j] +
+                            number_1[i] * (j < number_2.size() ? number_2[j] : 0) + carry;
+            res_number[i + j] = cur % BASE;
+            carry = static_cast<int>(cur / BASE);
         }
     }
+    res.int_part = std::deque(res_number.begin(),
+                              res_number.end() - 1 - static_cast<long>(float_part.size() + n.float_part.size()));
+
+    res.float_part = std::deque(
+            res_number.end() - 1 - static_cast<long>(float_part.size() + n.float_part.size()), res_number.end());
+    return res;
+    // Don't touch I think I'll need it later.
+//    res.int_part.resize(int_part.size() + n.int_part.size());
+//    res.float_part.resize(float_part.size() + n.float_part.size());
+//    for (int i = 0; i < this->float_part.size() + this->int_part.size(); ++i) {
+//        for (int j = 0; j < n.float_part.size() + n.int_part.size(); ++j) {
+//            long long remainder = 0;
+//            size_t ind = i + j;
+//            long long n1, n2;
+//            if (i >= this->float_part.size()) {
+//                n1 = int_part[i - float_part.size()];
+//            } else {
+//                n1 = float_part[i];
+//            }
+//            if (j >= n.float_part.size()) {
+//                n2 = n.int_part[j - n.float_part.size()];
+//            } else {
+//                n2 = n.float_part[j];
+//            }
+//
+//            if (i + j < res.float_part.size()) {
+//                res.float_part[ind] += n1 * n2;
+//                if (ind == res.float_part.size() - 1) {
+//                    res.int_part[0] += res.float_part[ind] / BASE;
+//                } else {
+//                    res.float_part[ind + 1] += res.float_part[ind] / BASE;
+//                }
+//                res.float_part[ind] %= BASE;
+//            } else {
+//                ind -= res.float_part.size();
+//                res.int_part[ind] = n1 * n2;
+//                res.int_part[ind + 1] += res.float_part[ind] / BASE;
+//                res.float_part[ind] %= BASE;
+//            }
+//        }
+//    }
+//    if (*(res.int_part.end() - 1) == 0) {
+//        res.int_part.pop_back();
+//    }
+//    if (*res.float_part.begin() == 0) {
+//        res.float_part.pop_front();
+//    }
     return res;
 }
 
