@@ -8,7 +8,6 @@ LongNum::LongNum() {
     float_part = std::deque<long long>(0);
     int_part = std::deque<long long>(0);
     isNegative = false;
-    n_frac = 0;
 }
 
 
@@ -52,12 +51,16 @@ LongNum::LongNum(std::string num) {
     while (from > size) {
         int to_add = 6;
         int temp_n = 0;
-        if (from == num.size() - 1) {
-            to_add = (from - size) % 6 ? (from-size) % 6 :6;
+        if (from == num.size() - 1 && (from - size) % 6 != 0) {
+            to_add = (from - size) % 6;
         }
         for (int k = to_add - 1; k >= 0; --k) {
             temp_n *= 10;
             temp_n += num[from - k] - '0';
+        }
+        while (to_add < 6) {
+            temp_n *= 10;
+            to_add++;
         }
         *f_ptr = temp_n;
         ++f_ptr;
@@ -352,51 +355,41 @@ LongNum LongNum::operator-(const LongNum &number) const {
 // TODO: fix multiplying
 LongNum LongNum::operator*(const LongNum &n) const {
     LongNum res;
-    res.n_frac = n_frac + n.n_frac;
-    int remainder = 0;
-    int last_elem_size = res.n_frac % 6;
-    const unsigned long size_int = int_part.size() + n.int_part.size() - 1;
-    res.int_part.resize(size_int);
-    res.float_part.resize((n_frac + n.n_frac) / 6 + ((n_frac + n.n_frac) % 6 ? 1 : 0));
-    for (int i = 0; i < n.float_part.size() + n.int_part.size(); ++i) {
-        for (int j = 0; j < float_part.size() + int_part.size(); ++j) {
-            if (i + j < res.float_part.size()) {
-                if (i + j == 0) {
-                    res.float_part[0] = n.float_part[i] * float_part[j];
-                    while (res.float_part[0] % 10 == 0 && res.float_part[0] != 0) {
-                        res.float_part[0] /= 10;
-                    }
-                    remainder = res.float_part[0] / static_cast<int>(pow(10, last_elem_size));
-                    res.float_part[0] %= static_cast<int>(pow(10, last_elem_size));
-                    while (static_cast<int>(log10(res.float_part[0])) != 5) {
-                        res.float_part[0] *= 10;
-                    }
-                } else {
-                    res.float_part[i + j] += n.float_part[i] * float_part[j];
-                    remainder = res.float_part[i + j] / BASE;
-                    res.float_part[i + j] %= BASE;
-                }
-                res.float_part[i + j + 1] += remainder;
-                remainder = 0;
+
+    res.int_part.resize(int_part.size() + n.int_part.size());
+    res.float_part.resize(float_part.size() + n.float_part.size());
+    for (int i = 0; i < this->float_part.size() + this->int_part.size(); ++i) {
+        for (int j = 0; j < n.float_part.size() + n.int_part.size(); ++j) {
+            long long remainder = 0;
+            size_t ind = i + j;
+            long long n1, n2;
+            if (i >= this->float_part.size()) {
+                n1 = int_part[i - float_part.size()];
             } else {
-                if (i >= n.float_part.size() && j >= float_part.size()) {
-                    res.int_part[i + j - res.float_part.size()] += n.int_part[i - n.float_part.size()] * int_part[
-                            j - float_part.size()];
-                } else if (i < n.float_part.size()) {
-                    res.int_part[i + j - res.float_part.size()] += n.float_part[i] * int_part[j - float_part.size()];
+                n1 = float_part[i];
+            }
+            if (j >= n.float_part.size()) {
+                n2 = n.int_part[j - n.float_part.size()];
+            } else {
+                n2 = n.float_part[j];
+            }
+
+            if (i + j < res.float_part.size()) {
+                res.float_part[ind] = n1 * n2;
+                if (ind == res.float_part.size() - 1) {
+                    res.int_part[0] += res.float_part[ind] / BASE;
                 } else {
-                    res.int_part[i + j - res.float_part.size()] += n.int_part[i - n.float_part.size()] * float_part[j];
+                    res.float_part[ind + 1] += res.float_part[ind] / BASE;
                 }
-                remainder = res.int_part[i + j - res.float_part.size()] / BASE;
-                res.int_part[i + j - res.float_part.size()] %= BASE;
-                if (i + j + 1 - res.float_part.size() >= res.int_part.size()) {
-                    res.int_part.emplace_back();
-                }
-                res.int_part[i + j + 1 - res.float_part.size()] += remainder;
+                res.float_part[ind] %= BASE;
+            } else {
+                ind -= res.float_part.size();
+                res.int_part[ind] = n1 * n2;
+                res.int_part[ind + 1] += res.float_part[ind] / BASE;
+                res.float_part[ind] %= BASE;
             }
         }
     }
-
     return res;
 }
 
@@ -414,21 +407,13 @@ void LongNum::cout() const {
     while (f_ptr != float_part.begin()) {
         --f_ptr;
         long long size = static_cast<long long>(log10(*f_ptr));
-        if (float_part.begin() == float_part.end() - 1) {
-            if (size != 5) {
-                for (int i = 0; i < 5 - size; ++i) {
-                    std::cout << '0';
-                }
-                std::cout << *f_ptr;
+        if (f_ptr != float_part.end() - 1) {
+            while (size != 5) {
+                std::cout << "0";
+                size++;
             }
-        } else if (f_ptr == float_part.begin()) {
             std::cout << *f_ptr;
         } else {
-            if (size != 5) {
-                for (int i = 0; i < 5 - size; ++i) {
-                    std::cout << '0';
-                }
-            }
             std::cout << *f_ptr;
         }
     }
