@@ -62,6 +62,10 @@ LongNum::LongNum() {
     isNegative = false;
 }
 
+LongNum LongNum::operator-() {
+    this->isNegative = !this->isNegative;
+    return *this;
+}
 
 LongNum::LongNum(std::string num) {
     int size = 0;
@@ -418,7 +422,7 @@ LongNum LongNum::operator-(const LongNum &number) const {
 
 LongNum LongNum::operator*(const LongNum &n) const {
     LongNum res;
-    res.isNegative = n.isNegative * this->isNegative;
+    res.isNegative = (n.isNegative + this->isNegative) % 2;
     const std::deque<long long> number_1 = this->digits, number_2 = n.digits;
     std::deque<long long> res_number(number_1.size() + number_2.size() + 1);
     for (int i = static_cast<int>(number_1.size()) - 1; i >= 0; --i) {
