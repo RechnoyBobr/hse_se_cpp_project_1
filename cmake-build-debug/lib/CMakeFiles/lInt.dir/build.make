@@ -44,19 +44,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/bin/cmake
+CMAKE_COMMAND = /home/ilya/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/bin/cmake
 
 # The command to remove a file.
-RM = /usr/bin/cmake -E rm -f
+RM = /home/ilya/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/c/Users/Administrator/CLionProjects/project_1
+CMAKE_SOURCE_DIR = /home/ilya/IdeaProjects/hse_se_cpp_project_1
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug
+CMAKE_BINARY_DIR = /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include lib/CMakeFiles/lInt.dir/depend.make
@@ -70,18 +70,18 @@ include lib/CMakeFiles/lInt.dir/progress.make
 include lib/CMakeFiles/lInt.dir/flags.make
 
 lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o: lib/CMakeFiles/lInt.dir/flags.make
-lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o: /mnt/c/Users/Administrator/CLionProjects/project_1/lib/long_arithmetic.cxx
+lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o: /home/ilya/IdeaProjects/hse_se_cpp_project_1/lib/long_arithmetic.cxx
 lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o: lib/CMakeFiles/lInt.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o"
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib && /usr/sbin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o -MF CMakeFiles/lInt.dir/long_arithmetic.cxx.o.d -o CMakeFiles/lInt.dir/long_arithmetic.cxx.o -c /mnt/c/Users/Administrator/CLionProjects/project_1/lib/long_arithmetic.cxx
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o"
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o -MF CMakeFiles/lInt.dir/long_arithmetic.cxx.o.d -o CMakeFiles/lInt.dir/long_arithmetic.cxx.o -c /home/ilya/IdeaProjects/hse_se_cpp_project_1/lib/long_arithmetic.cxx
 
 lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/lInt.dir/long_arithmetic.cxx.i"
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib && /usr/sbin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/Administrator/CLionProjects/project_1/lib/long_arithmetic.cxx > CMakeFiles/lInt.dir/long_arithmetic.cxx.i
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ilya/IdeaProjects/hse_se_cpp_project_1/lib/long_arithmetic.cxx > CMakeFiles/lInt.dir/long_arithmetic.cxx.i
 
 lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/lInt.dir/long_arithmetic.cxx.s"
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib && /usr/sbin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/Administrator/CLionProjects/project_1/lib/long_arithmetic.cxx -o CMakeFiles/lInt.dir/long_arithmetic.cxx.s
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ilya/IdeaProjects/hse_se_cpp_project_1/lib/long_arithmetic.cxx -o CMakeFiles/lInt.dir/long_arithmetic.cxx.s
 
 # Object files for target lInt
 lInt_OBJECTS = \
@@ -93,19 +93,19 @@ lInt_EXTERNAL_OBJECTS =
 lib/liblInt.a: lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o
 lib/liblInt.a: lib/CMakeFiles/lInt.dir/build.make
 lib/liblInt.a: lib/CMakeFiles/lInt.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library liblInt.a"
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib && $(CMAKE_COMMAND) -P CMakeFiles/lInt.dir/cmake_clean_target.cmake
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lInt.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library liblInt.a"
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib && $(CMAKE_COMMAND) -P CMakeFiles/lInt.dir/cmake_clean_target.cmake
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lInt.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 lib/CMakeFiles/lInt.dir/build: lib/liblInt.a
 .PHONY : lib/CMakeFiles/lInt.dir/build
 
 lib/CMakeFiles/lInt.dir/clean:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib && $(CMAKE_COMMAND) -P CMakeFiles/lInt.dir/cmake_clean.cmake
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib && $(CMAKE_COMMAND) -P CMakeFiles/lInt.dir/cmake_clean.cmake
 .PHONY : lib/CMakeFiles/lInt.dir/clean
 
 lib/CMakeFiles/lInt.dir/depend:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/c/Users/Administrator/CLionProjects/project_1 /mnt/c/Users/Administrator/CLionProjects/project_1/lib /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib/CMakeFiles/lInt.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ilya/IdeaProjects/hse_se_cpp_project_1 /home/ilya/IdeaProjects/hse_se_cpp_project_1/lib /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib/CMakeFiles/lInt.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : lib/CMakeFiles/lInt.dir/depend
 

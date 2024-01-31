@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/c/Users/Administrator/CLionProjects/project_1/lib
+# Install script for directory: /home/ilya/IdeaProjects/hse_se_cpp_project_1/lib
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,6 +39,6 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/sbin/objdump")
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
 endif()
 

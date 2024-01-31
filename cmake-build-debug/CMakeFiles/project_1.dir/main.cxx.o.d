@@ -1,5 +1,5 @@
 CMakeFiles/project_1.dir/main.cxx.o: \
- /mnt/c/Users/Administrator/CLionProjects/project_1/main.cxx \
+ /home/ilya/IdeaProjects/hse_se_cpp_project_1/main.cxx \
  /usr/include/stdc-predef.h /usr/include/c++/13.2.1/iostream \
  /usr/include/c++/13.2.1/bits/requires_hosted.h \
  /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
@@ -142,7 +142,7 @@ CMakeFiles/project_1.dir/main.cxx.o: \
  /usr/include/c++/13.2.1/bits/basic_ios.tcc \
  /usr/include/c++/13.2.1/bits/ostream.tcc /usr/include/c++/13.2.1/istream \
  /usr/include/c++/13.2.1/bits/istream.tcc \
- /mnt/c/Users/Administrator/CLionProjects/project_1/lib/long_arithmetic.h \
+ /home/ilya/IdeaProjects/hse_se_cpp_project_1/lib/long_arithmetic.h \
  /usr/include/c++/13.2.1/deque \
  /usr/include/c++/13.2.1/bits/stl_uninitialized.h \
  /usr/include/c++/13.2.1/bits/stl_deque.h \

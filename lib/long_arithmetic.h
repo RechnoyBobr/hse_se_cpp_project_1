@@ -1,6 +1,7 @@
-#ifndef long_num
-#define long_num
+#pragma once
 #include <deque>
+#include <string>
+
 
 class LongNum {
     std::deque<long long> int_part;
@@ -14,7 +15,9 @@ class LongNum {
 public:
     LongNum();
 
-    LongNum(float num, int accuracy);
+    LongNum(std::string, int accuracy);
+
+    void inverse_sign();
 
     void cout() const; // Cout the whole number
     LongNum operator+(const LongNum &n) const;
@@ -35,6 +38,3 @@ public:
 
     bool operator<=(const LongNum &n) const;
 };
-
-
-#endif

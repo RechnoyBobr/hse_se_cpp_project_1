@@ -12,51 +12,64 @@ LongNum::LongNum() {
     isNegative = false;
 }
 
-LongNum::LongNum(float num, int accuracy = 20) {
-    const int size_Z = std::ranges::max(static_cast<int>(log10f(num)), 0) + 1;
-    if (num < 0) {
-        isNegative = true;
-        num = -num;
-    } else {
-        isNegative = false;
-    }
-    n_frac = accuracy;
-    long long rounder = pow(10, accuracy + 1);
-    num = round((num * rounder + 0.5)) / static_cast<float>(rounder);
-    int_part.resize(size_Z / 6 + (size_Z % 6 ? 1 : 0));
-    float_part.resize(accuracy / 6 + (accuracy % 6 ? 1 : 0));
-    double integral;
-    float fractional = modf(num, &integral);
-    auto i_ptr = int_part.begin();
-    auto f_ptr = float_part.begin();
 
-    while (integral >= 1e-6) {
-        *i_ptr = static_cast<int>(integral) % BASE;
-        ++i_ptr;
-        integral = static_cast<double>(static_cast<int>(integral) / BASE);
+LongNum::LongNum(std::string num, int accuracy = 20) {
+    int size = 0;
+    if (num[0] == '-') {
+        this->isNegative = true;
     }
-    modf(fractional * static_cast<int>(pow(10, accuracy)), &integral);
-
-    while (accuracy < 6) {
-        integral *= 10;
-        accuracy++;
-    }
-    while (integral >= 1e-6) {
-        if (f_ptr == float_part.begin() && accuracy >= 7) {
-            int size = static_cast<int>(log10(integral)) + 1;
-            if (size % 6 != 0) {
-                *f_ptr = static_cast<int>(integral) % static_cast<int>(pow(10, size % 6));
-                integral = static_cast<double>(static_cast<int>(integral) / static_cast<int>(pow(10, size % 6)));
-            } else {
-                *f_ptr = static_cast<int>(integral) % BASE;
-                integral = static_cast<double>(static_cast<int>(integral) / BASE);
-            }
-        } else {
-            *f_ptr = static_cast<int>(integral) % BASE;
-            integral = static_cast<double>(static_cast<int>(integral) / BASE);
+    for (int i = 0; i < num.size(); ++i) {
+        if (num[i] == '.') {
+            size = i;
+            break;
         }
-        ++f_ptr;
     }
+    int_part.resize(size / 6 + (size % 6 ? 1 : 0));
+    if (size == 0) {
+        size++;
+    }
+    auto i_ptr = int_part.begin();
+    int i = size - 1;
+    while (i >= 0) {
+        int temp_n = 0, to_add = 6;
+        if (i == size - 1) {
+            to_add = size % 6;
+        }
+        for (int j = 0; j < to_add; ++j) {
+            temp_n *= 10;
+            temp_n += num[i + j] - '0';
+        }
+        *i_ptr = temp_n;
+        i -= to_add;
+        ++i_ptr;
+    }
+    float_part.resize(accuracy / 6 + (accuracy % 6 ? 1 : 0));
+    auto f_ptr = float_part.begin();
+    int from = std::max(accuracy, static_cast<int>(num.size() - size));
+    while (accuracy > num.size() - size + 6) {
+        accuracy -= 6;
+        f_ptr++;
+    }
+    this->n_frac = from;
+    while (from > size) {
+        int to_add = 6;
+        int temp_n = 0;
+        if (from == std::min(accuracy, static_cast<int>(num.size() - size))) {
+            to_add = from % 6;
+        }
+        for (int k = 0; k < to_add; ++k) {
+            temp_n *= 10;
+            temp_n += num[from + k] - '0';
+        }
+        *f_ptr = temp_n;
+        ++f_ptr;
+        from--;
+    }
+}
+
+
+void LongNum::inverse_sign() {
+    this->isNegative = !this->isNegative;
 }
 
 bool LongNum::operator>(const LongNum &n) const {
@@ -140,7 +153,7 @@ bool LongNum::operator<(const LongNum &n) const {
 }
 
 bool LongNum::operator==(const LongNum &n) const {
-    if (!(*this < n) && !(*this >  n)) {
+    if (!(*this < n) && !(*this > n)) {
         return true;
     }
     return false;
@@ -161,8 +174,8 @@ bool LongNum::operator<=(const LongNum &n) const {
 }
 
 LongNum &LongNum::operator=(const LongNum &n) {
-    this->float_part = std::deque(n.float_part.begin(),n.float_part.end());
-    this->int_part = std::deque(n.int_part.begin(),n.int_part.end());
+    this->float_part = std::deque(n.float_part.begin(), n.float_part.end());
+    this->int_part = std::deque(n.int_part.begin(), n.int_part.end());
     this->isNegative = n.isNegative;
     this->n_frac = n.n_frac;
     return *this;
@@ -171,13 +184,15 @@ LongNum &LongNum::operator=(const LongNum &n) {
 
 LongNum LongNum::operator+(const LongNum &n) const {
     if (n.isNegative && !this->isNegative) {
-        LongNum res = n - *this;
-        res.isNegative = true;
+        LongNum n1 = n;
+        n1.inverse_sign();
+        LongNum res = *this - n1;
         return res;
     }
     if (!n.isNegative && this->isNegative) {
-        LongNum res = n - *this;
-        res.isNegative = false;
+        LongNum n1 = *this;
+        n1.inverse_sign();
+        LongNum res = n - n1;
         return res;
     }
 
@@ -252,11 +267,13 @@ LongNum LongNum::operator+(const LongNum &n) const {
     return res;
 }
 
-LongNum LongNum::operator-(const LongNum &n) const {
-    LongNum res;
-    if (this->isNegative && !n.isNegative) {
-        res = *this + n;
 
+LongNum LongNum::operator-(const LongNum &number) const {
+    LongNum res;
+    LongNum n = number;
+    if (this->isNegative && !n.isNegative) {
+        n.inverse_sign();
+        res = *this + n;
     }
     const unsigned long float_size =
             std::max(float_part.size(), n.float_part.size());
@@ -264,11 +281,11 @@ LongNum LongNum::operator-(const LongNum &n) const {
     LongNum n1, n2;
     if (n > *this) {
         res.isNegative = true;
-        n1 = n;
+        n1 = number;
         n2 = *this;
     } else {
         n1 = *this;
-        n2 = n;
+        n2 = number;
     }
     int diff = float_part.size() - n.float_part.size();
     res.float_part.resize(float_size);
@@ -334,7 +351,7 @@ LongNum LongNum::operator-(const LongNum &n) const {
     return res;
 }
 
-
+// TODO: fix multiplying
 LongNum LongNum::operator*(const LongNum &n) const {
     LongNum res;
     res.n_frac = n_frac + n.n_frac;
@@ -366,7 +383,7 @@ LongNum LongNum::operator*(const LongNum &n) const {
             } else {
                 if (i >= n.float_part.size() && j >= float_part.size()) {
                     res.int_part[i + j - res.float_part.size()] += n.int_part[i - n.float_part.size()] * int_part[
-                        j - float_part.size()];
+                            j - float_part.size()];
                 } else if (i < n.float_part.size()) {
                     res.int_part[i + j - res.float_part.size()] += n.float_part[i] * int_part[j - float_part.size()];
                 } else {
@@ -399,15 +416,14 @@ void LongNum::cout() const {
     while (f_ptr != float_part.begin()) {
         --f_ptr;
         long long size = static_cast<long long>(log10(*f_ptr));
-        if(float_part.begin() == float_part.end() - 1) {
+        if (float_part.begin() == float_part.end() - 1) {
             if (size != 5) {
                 for (int i = 0; i < 5 - size; ++i) {
                     std::cout << '0';
                 }
                 std::cout << *f_ptr;
             }
-        }
-        else if (f_ptr == float_part.begin()) {
+        } else if (f_ptr == float_part.begin()) {
             long long divider = static_cast<long long>(pow(10, n_frac % 6));
             std::cout << *f_ptr / divider;
         } else {
@@ -415,8 +431,8 @@ void LongNum::cout() const {
                 for (int i = 0; i < 5 - size; ++i) {
                     std::cout << '0';
                 }
-                std::cout << *f_ptr;
             }
+            std::cout << *f_ptr;
         }
     }
 }

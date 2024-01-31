@@ -48,27 +48,27 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/bin/cmake
+CMAKE_COMMAND = /home/ilya/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/bin/cmake
 
 # The command to remove a file.
-RM = /usr/bin/cmake -E rm -f
+RM = /home/ilya/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/c/Users/Administrator/CLionProjects/project_1
+CMAKE_SOURCE_DIR = /home/ilya/IdeaProjects/hse_se_cpp_project_1
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug
+CMAKE_BINARY_DIR = /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	/usr/bin/cmake-gui -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
+	/home/ilya/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -78,7 +78,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/home/ilya/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/CMakeFiles /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib//CMakeFiles/progress.marks
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/CMakeFiles 0
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/CMakeFiles /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib//CMakeFiles/progress.marks
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/clean
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 lib/CMakeFiles/lInt.dir/rule:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/lInt.dir/rule
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/lInt.dir/rule
 .PHONY : lib/CMakeFiles/lInt.dir/rule
 
 # Convenience name for target.
@@ -127,7 +127,7 @@ lInt: lib/CMakeFiles/lInt.dir/rule
 
 # fast build rule for target.
 lInt/fast:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/lInt.dir/build.make lib/CMakeFiles/lInt.dir/build
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/lInt.dir/build.make lib/CMakeFiles/lInt.dir/build
 .PHONY : lInt/fast
 
 long_arithmetic.o: long_arithmetic.cxx.o
@@ -135,7 +135,7 @@ long_arithmetic.o: long_arithmetic.cxx.o
 
 # target to build an object file
 long_arithmetic.cxx.o:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/lInt.dir/build.make lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/lInt.dir/build.make lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.o
 .PHONY : long_arithmetic.cxx.o
 
 long_arithmetic.i: long_arithmetic.cxx.i
@@ -143,7 +143,7 @@ long_arithmetic.i: long_arithmetic.cxx.i
 
 # target to preprocess a source file
 long_arithmetic.cxx.i:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/lInt.dir/build.make lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.i
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/lInt.dir/build.make lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.i
 .PHONY : long_arithmetic.cxx.i
 
 long_arithmetic.s: long_arithmetic.cxx.s
@@ -151,7 +151,7 @@ long_arithmetic.s: long_arithmetic.cxx.s
 
 # target to generate assembly for a file
 long_arithmetic.cxx.s:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/lInt.dir/build.make lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.s
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/lInt.dir/build.make lib/CMakeFiles/lInt.dir/long_arithmetic.cxx.s
 .PHONY : long_arithmetic.cxx.s
 
 # Help Target
@@ -177,6 +177,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

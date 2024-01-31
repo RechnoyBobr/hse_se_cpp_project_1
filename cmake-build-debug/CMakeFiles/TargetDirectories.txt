@@ -1,6 +1,6 @@
-/mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/CMakeFiles/project_1.dir
-/mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib/CMakeFiles/lInt.dir
-/mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Administrator/CLionProjects/project_1/cmake-build-debug/lib/CMakeFiles/rebuild_cache.dir
+/home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/CMakeFiles/project_1.dir
+/home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib/CMakeFiles/lInt.dir
+/home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib/CMakeFiles/edit_cache.dir
+/home/ilya/IdeaProjects/hse_se_cpp_project_1/cmake-build-debug/lib/CMakeFiles/rebuild_cache.dir
