@@ -3,20 +3,22 @@
 #include <deque>
 #include <iostream>
 #include <algorithm>
-#include <chrono>
-#include <deque>
 
 LongNum::LongNum() {
     float_part = std::deque<long long>(0);
     int_part = std::deque<long long>(0);
     isNegative = false;
+    n_frac = 0;
 }
 
 
-LongNum::LongNum(std::string num, int accuracy = 20) {
+LongNum::LongNum(std::string num) {
     int size = 0;
     if (num[0] == '-') {
         this->isNegative = true;
+        num = num.substr(1, num.size() - 1);
+    } else {
+        this->isNegative = false;
     }
     for (int i = 0; i < num.size(); ++i) {
         if (num[i] == '.') {
@@ -35,35 +37,31 @@ LongNum::LongNum(std::string num, int accuracy = 20) {
         if (i == size - 1) {
             to_add = size % 6;
         }
-        for (int j = 0; j < to_add; ++j) {
+        for (int j = to_add - 1; j >= 0; --j) {
             temp_n *= 10;
-            temp_n += num[i + j] - '0';
+            temp_n += num[i - j] - '0';
         }
         *i_ptr = temp_n;
         i -= to_add;
         ++i_ptr;
     }
-    float_part.resize(accuracy / 6 + (accuracy % 6 ? 1 : 0));
+    float_part.resize((num.size() - size - 1) / 6 + ((num.size() - size - 1) % 6 ? 1 : 0));
     auto f_ptr = float_part.begin();
-    int from = std::max(accuracy, static_cast<int>(num.size() - size));
-    while (accuracy > num.size() - size + 6) {
-        accuracy -= 6;
-        f_ptr++;
-    }
+    int from = num.size() - 1;
     this->n_frac = from;
     while (from > size) {
         int to_add = 6;
         int temp_n = 0;
-        if (from == std::min(accuracy, static_cast<int>(num.size() - size))) {
-            to_add = from % 6;
+        if (from == num.size() - 1) {
+            to_add = (from - size) % 6 ? (from-size) % 6 :6;
         }
-        for (int k = 0; k < to_add; ++k) {
+        for (int k = to_add - 1; k >= 0; --k) {
             temp_n *= 10;
-            temp_n += num[from + k] - '0';
+            temp_n += num[from - k] - '0';
         }
         *f_ptr = temp_n;
         ++f_ptr;
-        from--;
+        from -= 6;
     }
 }
 
@@ -424,8 +422,7 @@ void LongNum::cout() const {
                 std::cout << *f_ptr;
             }
         } else if (f_ptr == float_part.begin()) {
-            long long divider = static_cast<long long>(pow(10, n_frac % 6));
-            std::cout << *f_ptr / divider;
+            std::cout << *f_ptr;
         } else {
             if (size != 5) {
                 for (int i = 0; i < 5 - size; ++i) {
