@@ -4,61 +4,9 @@
 #include <iostream>
 #include <algorithm>
 
-std::deque<long long> merge_deques(const std::deque<long long> &int_part, const std::deque<long long> &float_part) {
-    /*Deque's element is 6 digit of the whole number. Main part of merging deques is making sure that last integer part
-     *of number will be filled to 6 digits with fractional digits*/
-    std::deque<long long> res = std::deque(int_part.begin(), int_part.end());
-    std::deque floats = std::deque(float_part.begin(), float_part.end());
-    std::reverse(res.begin(), res.end());
-    int size = static_cast<int>(log10(static_cast<double>(res[res.size() - 1] ? res[res.size() - 1] : 1)));
-    int diff = 5 - size;
-    auto ptr = res.end() - 1;
-    if (diff != 0) {
-        for (int i = 0; i < floats.size(); ++i) {
-            res.emplace_back();
-            *ptr *= pow(10, diff);
-            *ptr += floats[i] / pow(10, 6 - diff);
-            floats[i] %= static_cast<long long>(pow(10, 6 - diff));
-            ++ptr;
-            *ptr = floats[i];
-        }
-    }
-    if (res[res.size() - 1] == 0) {
-        size = 1;
-    } else {
-        size = static_cast<int>(log10(res[res.size() - 1]));
-    }
-    if (size != 5) {
-        *(res.end() - 1) *= pow(10, 5 - size);
-    }
-    return res;
-}
-
-void LongNum::unmerge_deques() {
-    int f_size = static_cast<int>(log10f(digits[0] ? digits[0] : 1)) + 1;
-    int ind = (this->dotPos - f_size) / 6;
-    int digit = ind == 0 ? dotPos : (this->dotPos - f_size - 1) % 6;
-    int_part = std::deque(digits.begin(), digits.begin() + ind);
-    if (digit != 0) {
-        int_part.emplace_back(digits[ind] / pow(10, 6 - digit % 6));
-    }
-    std::reverse(int_part.begin(), int_part.end());
-    float_part = std::deque(digits.begin() + ind, digits.end());
-    float_part[0] %= static_cast<long long>(pow(10, 6 - digit % 6));
-    float_part[0] *= pow(10, digit % 6);
-    for (int i = 1; i < float_part.size() - 1; ++i) {
-        float_part[i - 1] += float_part[i] / static_cast<long long>(pow(10, 6 - digit % 6));
-        float_part[i] %= static_cast<long long>(pow(10, 6 - digit % 6));
-        float_part[i] *= static_cast<long long>(pow(10, digit % 6));
-    }
-}
-
 LongNum::LongNum() {
-    float_part = std::deque<long long>(0);
-    int_part = std::deque<long long>(0);
+    exp = 0;
     digits = std::deque<long long>(0);
-    n_frac = 0;
-    dotPos = 0;
     isNegative = false;
 }
 
@@ -68,64 +16,33 @@ LongNum LongNum::operator-() {
 }
 
 LongNum::LongNum(std::string num) {
-    int size = 0;
+    digits.resize((num.size() - 1) / 6 + ((num.size() - 1) % 6 ? 1 : 0));
     if (num[0] == '-') {
         this->isNegative = true;
         num = num.substr(1, num.size() - 1);
     } else {
         this->isNegative = false;
     }
+    int n = 0;
+    auto ptr = digits.begin();
     for (int i = 0; i < num.size(); ++i) {
         if (num[i] == '.') {
-            size = i;
-            break;
+            exp = i - 1;
+            continue;
+        }
+        if (n * 10 < BASE) {
+            n *= 10;
+            n += num[i] - '0';
+        } else {
+            *ptr = n;
+            n = 0;
+            ++ptr;
         }
     }
-    dotPos = size;
-    int_part.resize(size / 6 + (size % 6 ? 1 : 0));
-    if (size == 0) {
-        size++;
+    while (n * 10 < BASE) {
+        n *= 10;
     }
-
-    auto i_ptr = int_part.begin();
-    int i = size - 1;
-    while (i >= 0) {
-        int temp_n = 0, to_add = 6;
-        if (i == size - 1) {
-            to_add = size % 6;
-        }
-        for (int j = to_add - 1; j >= 0; --j) {
-            temp_n *= 10;
-            temp_n += num[i - j] - '0';
-        }
-        *i_ptr = temp_n;
-        i -= to_add;
-        ++i_ptr;
-    }
-    float_part.resize((num.size() - size - 1) / 6 + ((num.size() - size - 1) % 6 ? 1 : 0));
-    auto f_ptr = float_part.begin();
-    int from = size + 1;
-    this->n_frac = from;
-    while (from <= num.size() - 1) {
-        int to_add = 6;
-        int temp_n = 0;
-        if (from > static_cast<int>(num.size() - 6) && (num.size() - size) % 6 != 0) {
-            to_add = (num.size() - size - 1) % 6;
-        }
-        for (int k = 0; k < to_add; ++k) {
-            temp_n *= 10;
-            temp_n += static_cast<int>(num[from + k] - '0');
-        }
-        while (to_add < 6) {
-            temp_n *= 10;
-            to_add++;
-        }
-        *f_ptr = temp_n;
-        ++f_ptr;
-        from += 6;
-    }
-    digits.resize((num.size() - 2) / 6 + ((num.size() - 2) % 6 ? 1 : 0));
-    digits = merge_deques(int_part, float_part);
+    *ptr = n;
 }
 
 
@@ -134,81 +51,37 @@ void LongNum::inverse_sign() {
 }
 
 bool LongNum::operator>(const LongNum &n) const {
-    auto ptr_1 = int_part.end();
-    auto ptr_2 = n.int_part.end();
-    while (ptr_1 != int_part.begin() && ptr_2 != n.int_part.begin()) {
-        --ptr_1;
-        --ptr_2;
-        if (*ptr_1 > *ptr_2) {
-            return true;
-        }
-        if (*ptr_1 < *ptr_2) {
-            return false;
-        }
-    }
-    if (ptr_2 != n.int_part.begin()) {
-        return false;
-    }
-    if (ptr_1 != int_part.begin()) {
+    if (this->exp > n.exp) {
         return true;
     }
-    ptr_1 = float_part.end();
-    ptr_2 = n.float_part.end();
-    while (ptr_1 != float_part.begin()) {
-        --ptr_1;
-        --ptr_2;
-        if (*ptr_1 > *ptr_2) {
-            return true;
-        }
-        if (*ptr_1 < *ptr_2) {
-            return false;
-        }
-    }
-    if (ptr_2 != n.float_part.begin()) {
+    if (this->exp < n.exp) {
         return false;
     }
-    if (ptr_1 != float_part.begin()) {
-        return true;
+    for (int i = 0; i < this->digits.size(); i++) {
+        if (this->digits[i] > n.digits[i]) {
+            return true;
+        }
+        if (this->digits[i] < n.digits[i]) {
+            return false;
+        }
     }
     return false;
 }
 
 bool LongNum::operator<(const LongNum &n) const {
-    auto ptr_1 = int_part.end();
-    auto ptr_2 = n.int_part.end();
-    while (ptr_1 != int_part.begin() && ptr_2 != n.int_part.begin()) {
-        --ptr_1;
-        --ptr_2;
-        if (*ptr_1 < *ptr_2) {
-            return true;
-        }
-        if (*ptr_1 > *ptr_2) {
-            return false;
-        }
-    }
-    if (ptr_2 != n.int_part.begin()) {
+    if (this->exp < n.exp) {
         return true;
     }
-    if (ptr_1 != int_part.begin()) {
+    if (this->exp > n.exp) {
         return false;
     }
-    ptr_1 = float_part.end();
-    ptr_2 = n.float_part.end();
-    while (ptr_1 != float_part.begin()) {
-        --ptr_1;
-        --ptr_2;
-        if (*ptr_1 < *ptr_2) {
+    for (int i = 0; i < this->digits.size(); i++) {
+        if (this->digits[i] < n.digits[i]) {
             return true;
         }
-        if (*ptr_1 > *ptr_2) {
+        if (this->digits[i] > n.digits[i]) {
             return false;
         }
-    }
-    if (ptr_2 != n.float_part.begin()) {
-        return true;
-    }
-    if (ptr_1 != float_part.begin()) {
-        return false;
     }
     return false;
 }
@@ -235,10 +108,8 @@ bool LongNum::operator<=(const LongNum &n) const {
 }
 
 LongNum &LongNum::operator=(const LongNum &n) {
-    this->float_part = std::deque(n.float_part.begin(), n.float_part.end());
-    this->int_part = std::deque(n.int_part.begin(), n.int_part.end());
     this->isNegative = n.isNegative;
-    this->n_frac = n.n_frac;
+    this->digits = std::deque(n.digits.begin(), n.digits.end());
     return *this;
 }
 
@@ -441,68 +312,31 @@ LongNum LongNum::operator*(const LongNum &n) const {
         res_number.pop_front();
     }
     res.digits = res_number;
-    res.dotPos = this->dotPos + n.dotPos;
-    res.unmerge_deques();
     return res;
 }
 
-void LongNum::cout() const {
+std::string LongNum::toStr() const {
+    std::string result;
     if (isNegative) {
-        std::cout << '-';
+        result += '-';
     }
-    auto i_ptr = int_part.end();
-    while (i_ptr != int_part.begin()) {
-        --i_ptr;
-        std::cout << *i_ptr;
-    }
-    std::cout << '.';
-    auto f_ptr = float_part.begin();
-    while (f_ptr != float_part.end()) {
-        long long size;
-        if (*f_ptr == 0) {
-            size = 1;
+    for (int i = 0; i < digits.size(); ++i) {
+        if (i != digits.size() - 1) {
+            result += std::to_string(digits[i]);
         } else {
-            size = static_cast<long long>(log10(*f_ptr));
-        }
-        if (f_ptr != float_part.end() - 1) {
-            while (size != 5) {
-                std::cout << "0";
-                size++;
+            int temp = digits[i];
+            while (temp % 10 == 0) {
+                temp /= 10;
             }
-            std::cout << *f_ptr;
-        } else {
-            std::cout << *f_ptr;
+            result += std::to_string(temp);
         }
-        ++f_ptr;
     }
-    std::cout << "\n";
+    result = result.substr(0, exp + 2) + '.' + result.substr(exp + 1, result.size());
+    return result;
 }
 
 
-// LongNum LongNum::operator/(const LongNum &n) const {
-//     if (digits.size() == 1 && digits[0] == 0) {
-//         throw "Division by zero";
-//     }
-//     LongNum x = n;
-//     LongNum numerator("1.0");
-//     LongNum temp, res;
-//     while (x.dotPos < numerator.dotPos) {
-//         x.dotPos++;
-//         numerator.dotPos++;
-//     }
-//     while (numerator.dotPos < x.dotPos) {
-//         numerator.dotPos++;
-//     }
-//     temp.dotPos -= numerator.dotPos - 1;
-//     size_t n = 0, total = 30 + std::max(0L, temp.dotPos);
-//     while (numerator != LongNum("0.0") && n < total) {
-//         long long dg = 0; // digit
-//         while (numerator >= x) {
-//             dg++;
-//             numerator = numerator - x;
-//         }
-//         numerator.dotPos++;
-//         temp.digits.emplace_back(div);
-//
-//     }
-// }
+std::ostream &operator<<(std::ostream &out, const LongNum &n) {
+    out << n.toStr();
+    return out;
+}
