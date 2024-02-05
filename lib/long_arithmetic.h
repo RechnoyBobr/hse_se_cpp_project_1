@@ -28,7 +28,7 @@ public:
   LongNum operator-(const LongNum &n) const;
 
   LongNum operator-();
-  LongNum inverse_number(int accuracy);
+  [[nodiscard]] LongNum inverse_number(int accuracy) const;
   LongNum operator/(const LongNum &n) const;
 
   bool operator>(const LongNum &n) const;
@@ -40,8 +40,6 @@ public:
   bool operator!=(const LongNum &n) const;
 
   LongNum &operator=(const LongNum &n);
-
-  LongNum inverse() const;
 
   bool operator>=(const LongNum &n) const;
 
