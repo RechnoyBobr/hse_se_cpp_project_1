@@ -1,4 +1,1 @@
-cmake-build-debug
-lib/CMakeFiles
-cmake-build-debug/*
-lib/CMakeFiles/*
+/cmake-build-debug/ -f

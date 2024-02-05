@@ -15,34 +15,49 @@ LongNum LongNum::operator-() {
     return *this;
 }
 
-LongNum::LongNum(std::string num) {
-    digits.resize((num.size() - 1) / 6 + ((num.size() - 1) % 6 ? 1 : 0));
-    if (num[0] == '-') {
-        this->isNegative = true;
-        num = num.substr(1, num.size() - 1);
-    } else {
-        this->isNegative = false;
+LongNum::LongNum(const std::string &num) {
+    int i = 0;
+    isNegative = false; // _bigF operator don't recognize - as a char, but as a unary operator.
+    while (i < num.size() && num[i] != '.') {
+        i++;
     }
-    int n = 0;
-    auto ptr = digits.begin();
-    for (int i = 0; i < num.size(); ++i) {
-        if (num[i] == '.') {
-            exp = i - 1;
-            continue;
+    exp = i;
+    expPos = i / 6 + (i % 6 ? 1 : 0);
+    digits.resize(i / 6 + (i % 6 ? 1 : 0));
+    auto int_end = digits.end(); // std::deque<long long>:iterator;
+    int block = i - 1;
+    while (int_end != digits.begin()) {
+        --int_end;
+        int to = block - 5;
+        int n = 0, mp = 1;
+        for (; block >= std::max(to, 0); block--) {
+            n += (num[block] - '0') * mp;
+            mp *= 10;
         }
-        if (n * 10 < BASE) {
+        *int_end = n;
+        to = block - 1;
+    }
+    digits.resize(digits.size() + (num.size() - i - 1) / 6 + ((num.size() - i - 1) % 6 ? 1 : 0));
+    block = i + 1;
+    auto frac = digits.begin() + i / 6 + (i % 6 ? 1 : 0);
+
+    while (frac != digits.end()) {
+        int to = block + 5, n = 0, cnt = 0;
+        for (; block <= std::min(to, static_cast<int>(num.size()) - 1); ++block) {
             n *= 10;
-            n += num[i] - '0';
-        } else {
-            *ptr = n;
-            n = 0;
-            ++ptr;
+            n += num[block] - '0';
+            cnt++;
         }
+        if (block == num.size() && n != 0) {
+            while (cnt < 6) {
+                n *= 10;
+                cnt++;
+            }
+        }
+        *frac = n;
+        to = block + 1;
+        ++frac;
     }
-    while (n * 10 < BASE) {
-        n *= 10;
-    }
-    *ptr = n;
 }
 
 
@@ -127,74 +142,40 @@ LongNum LongNum::operator+(const LongNum &n) const {
         LongNum res = n - n1;
         return res;
     }
-
-    const unsigned long float_size =
-            std::max(float_part.size(), n.float_part.size());
-    const unsigned long int_size = std::max(int_part.size(), n.int_part.size());
     LongNum res;
-    int diff = float_part.size() - n.float_part.size();
-    res.float_part.resize(float_size);
-    res.int_part.resize(int_size);
-    bool to_int_part = false;
-    auto f_ptr = res.float_part.begin();
-    auto f_ptr1 = float_part.begin();
-    auto f_ptr2 = n.float_part.begin();
+    res.digits.resize(std::max(this->digits.size(), n.digits.size()));
+    res.exp = std::max(this->exp, n.exp);
+    res.expPos = std::max(this->expPos, n.expPos);
+    auto n1_ptr = this->digits.end() - 1; // std::deque<long long>::reverse_iterator
+    auto n2_ptr = n.digits.end() - 1;
+    long diff = this->digits.size() - this->expPos - n.digits.size() + n.expPos;
+    bool isIncreasing = false;
+    for (int i = res.digits.size() - 1; i >= 0; --i) {
+        if (diff >= 0 && n1_ptr >= this->digits.begin()) {
+            res.digits[i] += *n1_ptr;
+            --n1_ptr;
+            if (diff != 0) {
+                isIncreasing = true;
+            }
+        }
+        if (diff <= 0 && n2_ptr >= n.digits.begin()) {
+            res.digits[i] += *n2_ptr;
+            --n2_ptr;
+        }
 
-    while (f_ptr != res.float_part.end()) {
-        bool decrease = false, increase = false;
-        if (f_ptr1 != float_part.end() && diff >= 0) {
-            *f_ptr += *f_ptr1;
-            ++f_ptr1;
-            if (diff != 0) {
-                decrease = true;
+        if (diff != 0) {
+            diff += isIncreasing ? -1 : 1;
+        }
+        if (res.digits[i] >= BASE) {
+            res.digits[i] -= BASE;
+            if (i == 0) {
+                res.digits.emplace_front(1);
+                res.exp++;
+                res.expPos++;
+                break;
             }
+            res.digits[i - 1]++;
         }
-        if (f_ptr2 != n.float_part.end() && diff <= 0) {
-            *f_ptr += *f_ptr2;
-            ++f_ptr2;
-            if (diff != 0) {
-                increase = true;
-            }
-        }
-        if (*f_ptr >= BASE) {
-            if (f_ptr == res.float_part.end() - 1) {
-                to_int_part = true;
-                *f_ptr %= BASE;
-            } else {
-                *(f_ptr + 1) += 1;
-                *f_ptr %= BASE;
-            }
-        }
-        if (increase) {
-            diff++;
-        }
-        if (decrease) {
-            diff--;
-        }
-        ++f_ptr;
-    }
-    auto i_ptr = res.int_part.begin();
-    int ind = 0;
-    while (i_ptr != res.int_part.end()) {
-        if (to_int_part) {
-            *i_ptr += 1;
-            to_int_part = false;
-        }
-        if (ind < int_part.size()) {
-            *i_ptr += int_part[ind];
-        }
-        if (ind < n.int_part.size()) {
-            *i_ptr += n.int_part[ind];
-        }
-        if (*i_ptr >= BASE) {
-            if (i_ptr == res.int_part.end() - 1) {
-                res.int_part.emplace_back();
-            }
-            *(i_ptr + 1) = 1;
-            *i_ptr %= BASE;
-        }
-        ++i_ptr;
-        ++ind;
     }
     return res;
 }
@@ -214,78 +195,40 @@ LongNum LongNum::operator-(const LongNum &number) const {
         res = n + n_1;
         return res;
     }
-    const unsigned long float_size =
-            std::max(float_part.size(), n.float_part.size());
-    const unsigned long int_size = std::max(int_part.size(), n.int_part.size());
-    LongNum n1, n2;
-    if (n > *this) {
-        res.isNegative = true;
-        n1 = number;
-        n2 = *this;
-    } else {
-        n1 = *this;
-        n2 = number;
-    }
-    int diff = float_part.size() - n.float_part.size();
-    res.float_part.resize(float_size);
-    res.int_part.resize(int_size);
-    bool to_int_part = false;
-    auto f_ptr = res.float_part.begin();
-    auto f_ptr1 = n1.float_part.begin();
-    auto f_ptr2 = n2.float_part.begin();
+    res.digits.resize(std::max(this->digits.size(), n.digits.size()));
+    res.exp = std::max(this->exp, n.exp);
+    res.expPos = std::max(this->expPos, n.expPos);
+    auto n1_ptr = this->digits.end() - 1; // std::deque<long long>::reverse_iterator
+    auto n2_ptr = n.digits.end() - 1;
+    long diff = this->digits.size() - this->expPos - n.digits.size() + n.expPos;
+    bool isIncreasing = false;
+    for (int i = res.digits.size() - 1; i >= 0; --i) {
+        if (diff >= 0 && n1_ptr >= this->digits.begin()) {
+            res.digits[i] += *n1_ptr;
+            --n1_ptr;
+            if (diff != 0) {
+                isIncreasing = true;
+            }
+        }
+        if (diff <= 0 && n2_ptr >= n.digits.begin()) {
+            res.digits[i] -= *n2_ptr;
+            --n2_ptr;
+        }
 
-    while (f_ptr != res.float_part.end()) {
-        bool decrease = false, increase = false;
-        if (f_ptr1 != float_part.end() && diff >= 0) {
-            *f_ptr += *f_ptr1;
-            ++f_ptr1;
-            if (diff != 0) {
-                decrease = true;
+        if (diff != 0) {
+            diff += isIncreasing ? -1 : 1;
+        }
+        if (res.digits[i] < 0) {
+            res.digits[i] += BASE;
+            if (i == 0) {
+                res.isNegative = !res.isNegative;
+                res.digits.emplace_front(1);
+                res.exp++;
+                res.expPos++;
+                break;
             }
+            res.digits[i - 1]--;
         }
-        if (f_ptr2 != n.float_part.end() && diff <= 0) {
-            *f_ptr -= *f_ptr2;
-            ++f_ptr2;
-            if (diff != 0) {
-                increase = true;
-            }
-        }
-        if (*f_ptr < 0) {
-            if (f_ptr == res.float_part.end() - 1) {
-                to_int_part = true;
-                *f_ptr += BASE;
-            } else {
-                *(f_ptr + 1) -= 1;
-                *f_ptr += BASE;
-            }
-        }
-        if (increase) {
-            diff++;
-        }
-        if (decrease) {
-            diff--;
-        }
-        ++f_ptr;
-    }
-    auto i_ptr = res.int_part.begin();
-    int ind = 0;
-    while (i_ptr != res.int_part.end()) {
-        if (to_int_part) {
-            *i_ptr -= 1;
-            to_int_part = false;
-        }
-        if (ind < int_part.size()) {
-            *i_ptr += int_part[ind];
-        }
-        if (ind < n.int_part.size()) {
-            *i_ptr -= n.int_part[ind];
-        }
-        if (*i_ptr < 0) {
-            *(i_ptr + 1) = -1;
-            *i_ptr += BASE;
-        }
-        ++i_ptr;
-        ++ind;
     }
     return res;
 }
@@ -305,13 +248,19 @@ LongNum LongNum::operator*(const LongNum &n) const {
             carry = static_cast<int>(cur / BASE);
         }
     }
+    res.exp = this->exp + n.exp;
+    res.expPos = this->expPos + n.expPos;
     if (*(res_number.end() - 1) == 0) {
         res_number.pop_back();
+        res.exp--;
     }
     if (*res_number.begin() == 0) {
         res_number.pop_front();
+        res.exp--;
+        res.expPos--;
     }
     res.digits = res_number;
+
     return res;
 }
 
@@ -321,17 +270,11 @@ std::string LongNum::toStr() const {
         result += '-';
     }
     for (int i = 0; i < digits.size(); ++i) {
-        if (i != digits.size() - 1) {
-            result += std::to_string(digits[i]);
-        } else {
-            int temp = digits[i];
-            while (temp % 10 == 0) {
-                temp /= 10;
-            }
-            result += std::to_string(temp);
+        if (i == expPos) {
+            result += '.';
         }
+        result += std::to_string(digits[i]);
     }
-    result = result.substr(0, exp + 2) + '.' + result.substr(exp + 1, result.size());
     return result;
 }
 
@@ -339,4 +282,8 @@ std::string LongNum::toStr() const {
 std::ostream &operator<<(std::ostream &out, const LongNum &n) {
     out << n.toStr();
     return out;
+}
+
+LongNum operator ""_bigF(const char *x) {
+    return {std::string{x}};
 }
