@@ -5,7 +5,6 @@
 
 class LongNum {
   std::deque<long long> digits;
-  long exp;
   long expPos;
   // numbers closer to the beginning is less than the ones that closer to end
   // f_part[0] < f_part[1]

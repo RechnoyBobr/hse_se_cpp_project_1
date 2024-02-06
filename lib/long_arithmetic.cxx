@@ -2,10 +2,11 @@
 #include <algorithm>
 #include <deque>
 #include <iostream>
+#include <cmath>
 #include <string>
 
 LongNum::LongNum() {
-    exp = 0;
+    expPos = 0;
     digits = std::deque<long long>(0);
     isNegative = false;
 }
@@ -22,7 +23,6 @@ LongNum::LongNum(const std::string &num) {
     while (i < num.size() && num[i] != '.') {
         i++;
     }
-    exp = i;
     expPos = i / 6 + (i % 6 ? 1 : 0);
     digits.resize(i / 6 + (i % 6 ? 1 : 0));
     auto int_end = digits.end(); // std::deque<long long>:iterator;
@@ -65,10 +65,10 @@ LongNum::LongNum(const std::string &num) {
 void LongNum::inverse_sign() { this->isNegative = !this->isNegative; }
 
 bool LongNum::operator>(const LongNum &n) const {
-    if (this->exp > n.exp) {
+    if (this->expPos > n.expPos) {
         return true;
     }
-    if (this->exp < n.exp) {
+    if (this->expPos < n.expPos) {
         return false;
     }
     for (int i = 0; i < std::min(this->digits.size(), n.digits.size()); i++) {
@@ -79,13 +79,13 @@ bool LongNum::operator>(const LongNum &n) const {
             return false;
         }
     }
-    if(digits.size() > n.digits.size()) {
+    if (digits.size() > n.digits.size()) {
         for (int i = static_cast<int>(n.digits.size()); i < digits.size(); ++i) {
             if (digits[i] != 0) {
                 return true;
             }
         }
-    }else if (digits.size() > n.digits.size()) {
+    } else if (digits.size() > n.digits.size()) {
         for (int i = static_cast<int>(digits.size()); i < n.digits.size(); ++i) {
             if (n.digits[i] != 0) {
                 return false;
@@ -96,10 +96,10 @@ bool LongNum::operator>(const LongNum &n) const {
 }
 
 bool LongNum::operator<(const LongNum &n) const {
-    if (this->exp < n.exp) {
+    if (this->expPos < n.expPos) {
         return true;
     }
-    if (this->exp > n.exp) {
+    if (this->expPos > n.expPos) {
         return false;
     }
     for (int i = 0; i < std::min(this->digits.size(), n.digits.size()); i++) {
@@ -110,13 +110,13 @@ bool LongNum::operator<(const LongNum &n) const {
             return false;
         }
     }
-    if(digits.size() > n.digits.size()) {
+    if (digits.size() > n.digits.size()) {
         for (int i = n.digits.size(); i < digits.size(); ++i) {
             if (digits[i] != 0) {
                 return false;
             }
         }
-    }else if (digits.size() > n.digits.size()) {
+    } else if (digits.size() > n.digits.size()) {
         for (int i = digits.size(); i < n.digits.size(); ++i) {
             if (n.digits[i] != 0) {
                 return true;
@@ -168,7 +168,6 @@ LongNum LongNum::operator+(const LongNum &n) const {
     }
     LongNum res;
     res.digits.resize(std::max(this->digits.size(), n.digits.size()));
-    res.exp = std::max(this->exp, n.exp);
     res.expPos = std::max(this->expPos, n.expPos);
     auto n1_ptr =
             this->digits.end() - 1; // std::deque<long long>::reverse_iterator
@@ -195,7 +194,6 @@ LongNum LongNum::operator+(const LongNum &n) const {
             res.digits[i] -= BASE;
             if (i == 0) {
                 res.digits.emplace_front(1);
-                res.exp++;
                 res.expPos++;
                 break;
             }
@@ -220,7 +218,6 @@ LongNum LongNum::operator-(const LongNum &number) const {
         return res;
     }
     res.digits.resize(std::max(this->digits.size(), n.digits.size()));
-    res.exp = std::max(this->exp, n.exp);
     res.expPos = std::max(this->expPos, n.expPos);
     auto n1_ptr =
             this->digits.end() - 1; // std::deque<long long>::reverse_iterator
@@ -248,7 +245,6 @@ LongNum LongNum::operator-(const LongNum &number) const {
             if (i == 0) {
                 res.isNegative = !res.isNegative;
                 res.digits.emplace_front(1);
-                res.exp++;
                 res.expPos++;
                 break;
             }
@@ -277,21 +273,21 @@ LongNum LongNum::operator*(const LongNum &n) const {
             carry = static_cast<int>(cur / BASE);
         }
     }
-    res.exp = this->exp + n.exp;
     res.expPos = this->expPos + n.expPos;
     if (popFirst) {
         res_number.pop_front();
     }
-    while (*(res_number.end() - 1) == 0 && *(res_number.end() - 2) != '.') {
-        res_number.pop_back();
-    }
-    while (*res_number.begin() == 0) {
+    if (*res_number.begin() == 0) {
         res_number.pop_front();
-        if (res.exp != 1) {
-            res.exp--;
-            res.expPos--;
-        }
+        res.expPos--;
+
     }
+    int i = res_number.size() - 1;
+    while (i >= res.expPos && res_number[i] == 0) {
+        res_number.pop_back();
+        i--;
+    }
+
     res.digits = res_number;
 
     return res;
@@ -306,17 +302,14 @@ bool LongNum::operator!=(const LongNum &n) const {
 
 LongNum LongNum::inverse_number(int accuracy) const {
     LongNum n = 1.0_bigF;
+    const LongNum mult = 10.0_bigF;
     std::string res = "";
-    int m = 0;
     bool decrease_accuracy = false;
     while (accuracy > 0) {
-        if (n < *this) {
-            res += ".";
-            decrease_accuracy = true;
-        }
         if (n == 0.0_bigF) {
             break;
         }
+        int m = 0;
         LongNum l = 0.0_bigF;
         while (m + 1 < 10 && l + *this <= n) {
             l = l + *this;
@@ -326,7 +319,12 @@ LongNum LongNum::inverse_number(int accuracy) const {
             accuracy--;
         }
         res += std::to_string(m);
+        if (n < *this) {
+            res += ".";
+            decrease_accuracy = true;
+        }
         n = n - l;
+        n = n * mult;
     }
     while (accuracy > 0) {
         res += "0";
@@ -350,7 +348,15 @@ std::string LongNum::toStr() const {
         if (i == expPos) {
             result += '.';
         }
-        result += std::to_string(digits[i]);
+        if (i == digits.size() - 1 && expPos != i + 1) {
+            long long f = digits[i];
+            while (f % 10 == 0) {
+                f /= 10;
+            }
+            result += std::to_string(f);
+        } else {
+            result += std::to_string(digits[i]);
+        }
     }
     return result;
 }
@@ -360,4 +366,4 @@ std::ostream &operator<<(std::ostream &out, const LongNum &n) {
     return out;
 }
 
-LongNum operator""_bigF(const char *x) { return {std::string{x}}; }
+LongNum operator ""_bigF(const char *x) { return {std::string{x}}; }
