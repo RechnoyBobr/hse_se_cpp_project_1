@@ -3,15 +3,11 @@ project(project_1)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(project_1 main.cxx test_1.cc)
+include(cmake/Core.cmake)
 
-add_subdirectory(lib)
+as_library()
+with_test(project_1 gtest_main)
 
-target_link_libraries(project_1 PUBLIC bigF GTest::gtest_main)
-target_include_directories(project_1 PUBLIC
-        "${PROJECT_BINARY_DIR}"
-        "${PROJECT_SOURCE_DIR}/lib"
-)
 include(FetchContent)
 FetchContent_Declare(
         googletest
@@ -22,6 +18,3 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
-
-include(GoogleTest)
-gtest_discover_tests(project_1)

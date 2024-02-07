@@ -1,4 +1,4 @@
-#include "long_arithmetic.h"
+#include "../include/long_arithmetic.h"
 #include <algorithm>
 #include <deque>
 #include <iostream>
@@ -12,7 +12,14 @@ LongNum::LongNum() {
 }
 
 LongNum LongNum::operator-() {
-    this->isNegative = !this->isNegative;
+    int i = 0;
+    while (i != this->digits.size()) {
+        if (this->digits[i] != 0) {
+            this->isNegative = !this->isNegative;
+            return *this;
+        }
+        i++;
+    }
     return *this;
 }
 
@@ -65,6 +72,42 @@ LongNum::LongNum(const std::string &num) {
 void LongNum::inverse_sign() { this->isNegative = !this->isNegative; }
 
 bool LongNum::operator>(const LongNum &n) const {
+    if (this->isNegative && !n.isNegative) {
+        return true;
+    }
+    if (!this->isNegative && n.isNegative) {
+        return false;
+    }
+    if (this->isNegative && n.isNegative) {
+        if (this->expPos > n.expPos) {
+            return false;
+        }
+        if (this->expPos < n.expPos) {
+            return true;
+        }
+        for (int i = 0; i < std::min(this->digits.size(), n.digits.size()); i++) {
+            if (this->digits[i] > n.digits[i]) {
+                return false;
+            }
+            if (this->digits[i] < n.digits[i]) {
+                return true;
+            }
+        }
+        if (digits.size() > n.digits.size()) {
+            for (int i = static_cast<int>(n.digits.size()); i < digits.size(); ++i) {
+                if (digits[i] != 0) {
+                    return false;
+                }
+            }
+        } else if (digits.size() > n.digits.size()) {
+            for (int i = static_cast<int>(digits.size()); i < n.digits.size(); ++i) {
+                if (n.digits[i] != 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     if (this->expPos > n.expPos) {
         return true;
     }
@@ -96,6 +139,42 @@ bool LongNum::operator>(const LongNum &n) const {
 }
 
 bool LongNum::operator<(const LongNum &n) const {
+    if (this->isNegative && !n.isNegative) {
+        return true;
+    }
+    if (!this->isNegative && n.isNegative) {
+        return false;
+    }
+    if (this->isNegative && n.isNegative) {
+        if (this->expPos < n.expPos) {
+            return false;
+        }
+        if (this->expPos > n.expPos) {
+            return true;
+        }
+        for (int i = 0; i < std::min(this->digits.size(), n.digits.size()); i++) {
+            if (this->digits[i] < n.digits[i]) {
+                return false;
+            }
+            if (this->digits[i] > n.digits[i]) {
+                return true;
+            }
+        }
+        if (digits.size() > n.digits.size()) {
+            for (int i = n.digits.size(); i < digits.size(); ++i) {
+                if (digits[i] != 0) {
+                    return true;
+                }
+            }
+        } else if (digits.size() > n.digits.size()) {
+            for (int i = digits.size(); i < n.digits.size(); ++i) {
+                if (n.digits[i] != 0) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
     if (this->expPos < n.expPos) {
         return true;
     }
@@ -150,6 +229,7 @@ bool LongNum::operator<=(const LongNum &n) const {
 LongNum &LongNum::operator=(const LongNum &n) {
     this->isNegative = n.isNegative;
     this->digits = std::deque(n.digits.begin(), n.digits.end());
+    this->expPos = n.expPos;
     return *this;
 }
 
@@ -264,23 +344,19 @@ LongNum LongNum::operator*(const LongNum &n) const {
         int carry = 0;
         for (int j = static_cast<int>(number_2.size()) - 1; j >= 0 || carry != 0;
              --j) {
-            if (j == -1) {
+            if (j == -1 && i == 0) {
                 popFirst = false;
             }
-            long long cur = res_number[i + j + 2] +
+            long long cur = res_number[i + j + 1] +
                             number_1[i] * (j >= 0 ? number_2[j] : 0) + carry;
-            res_number[i + j + 2] = cur % BASE;
+            res_number[i + j + 1] = cur % BASE;
             carry = static_cast<int>(cur / BASE);
         }
     }
     res.expPos = this->expPos + n.expPos;
     if (popFirst) {
         res_number.pop_front();
-    }
-    if (*res_number.begin() == 0) {
-        res_number.pop_front();
         res.expPos--;
-
     }
     int i = res_number.size() - 1;
     while (i >= res.expPos && res_number[i] == 0) {
@@ -324,20 +400,65 @@ LongNum LongNum::inverse_number(int accuracy) const {
             decrease_accuracy = true;
         }
         n = n - l;
-        n = n * mult;
+        if (decrease_accuracy) {
+            n = n * mult;
+        }
     }
     while (accuracy > 0) {
         res += "0";
         accuracy--;
     }
-    LongNum inversed_number(res);
-    return inversed_number;
+    LongNum inverse_number(res);
+    return inverse_number;
 }
 
-LongNum LongNum::operator/(const LongNum &n) const {
-    LongNum res = *this * n.inverse_number(200);
-    return res;
+LongNum LongNum::operator/(const LongNum &number) const {
+    const LongNum mult = 10.0_bigF;
+    LongNum n = *this, n1 = number;
+    n1.isNegative = false;
+    n.isNegative = false;
+    int accuracy = static_cast<int>(std::max(n.digits.size() * 6, digits.size() * 6));
+    accuracy = std::max(accuracy, 300);
+    std::string res = "";
+    bool decrease_accuracy = false;
+    while (accuracy > 0) {
+        if (n == 0.0_bigF) {
+            break;
+        }
+        if (n <= n1 && !decrease_accuracy) {
+            res += ".";
+            decrease_accuracy = true;
+        }
+        if (decrease_accuracy) {
+            n = n * mult;
+        }
+        int m = 0;
+        LongNum l = 0.0_bigF;
+        while (m + 1 < 10 && l + n1 <= n) {
+            l = l + n1;
+            m++;
+        }
+        if (decrease_accuracy) {
+            accuracy--;
+        }
+        res += std::to_string(m);
+        n = n - l;
+        if (n.digits[0] == 0) {
+            n.digits.pop_front();
+            n.expPos--;
+        }
+    }
+    while (accuracy > 0) {
+        res += "0";
+        accuracy--;
+    }
+    LongNum inverse_number(res);
+    return inverse_number;
 }
+
+// TODO: pi/4 = arctg1/2 + arctg1/3
+// arctg x = x - x^3/3 +x^5/5 -x^7/7 + x^9/9 +....
+// TODO: what is the n to make pi with accuracy of 4.
 
 std::string LongNum::toStr() const {
     std::string result;
@@ -347,6 +468,9 @@ std::string LongNum::toStr() const {
     for (int i = 0; i < digits.size(); ++i) {
         if (i == expPos) {
             result += '.';
+        }
+        for (int j = 5 - static_cast<int>(log(digits[i])) != 5; j >= 0; --j) {
+            result += "0";
         }
         if (i == digits.size() - 1 && expPos != i + 1) {
             long long f = digits[i];
@@ -367,3 +491,5 @@ std::ostream &operator<<(std::ostream &out, const LongNum &n) {
 }
 
 LongNum operator ""_bigF(const char *x) { return {std::string{x}}; }
+
+

@@ -1,2 +1,0 @@
-/usr/sbin/ar qc liblInt.a CMakeFiles/lInt.dir/long_arithmetic.cxx.o
-/usr/sbin/ranlib liblInt.a
