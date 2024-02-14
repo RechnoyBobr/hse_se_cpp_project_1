@@ -7,8 +7,9 @@ include(cmake/Core.cmake)
 
 as_library()
 with_test(project_1 gtest_main)
-
-set(CMAKE_CXX_FLAGS "--coverage")
+add_executable(pie_calc Pie/pie.cxx)
+target_link_libraries(pie_calc PRIVATE project_1)
+set(CMAKE_CXX_FLAGS "-O2 --coverage")
 include(FetchContent)
 FetchContent_Declare(
         googletest
