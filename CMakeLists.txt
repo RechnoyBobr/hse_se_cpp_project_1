@@ -8,6 +8,7 @@ include(cmake/Core.cmake)
 as_library()
 with_test(project_1 gtest_main)
 
+set(CMAKE_CXX_FLAGS "--coverage")
 include(FetchContent)
 FetchContent_Declare(
         googletest

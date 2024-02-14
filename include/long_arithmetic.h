@@ -4,18 +4,10 @@
 #include <string>
 
 class LongNum {
-    std::deque<long long> digits;
-    long expPos;
-    // numbers closer to the beginning is less than the ones that closer to end
-    // f_part[0] < f_part[1]
-    const long long BASE = 1000000000;
-    const int BASE_SIZE = 9;
-    bool isNegative;
-
 public:
     LongNum();
 
-    LongNum(const std::string &num); // NOLINT(*-explicit-constructor)
+    /*explicit*/ LongNum(const std::string &num); // NOLINT(*-explicit-constructor)
 
     void inverse_sign();
 
@@ -54,6 +46,15 @@ public:
     bool operator<=(const LongNum &n) const;
 
     friend std::ostream &operator<<(std::ostream &out, const LongNum &n);
+private:
+    std::deque<long long> digits;
+    long expPos;
+    // numbers closer to the beginning is less than the ones that closer to end
+    // f_part[0] < f_part[1]
+    const long long BASE = 1000000000;
+    const int BASE_SIZE = 9;
+    bool isNegative;
+
 };
 
 LongNum operator ""_bigF(const char *x);
