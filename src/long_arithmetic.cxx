@@ -470,8 +470,7 @@ namespace long_num {
                 result += std::to_string(digits[i]);
             }
         }
-        return result;
-    }
+        return result;}
 
     std::ostream &operator<<(std::ostream &out, const LongNum &n) {
         out << n.toStr();
